@@ -25,9 +25,9 @@ metadata:
               "autoClean": true
             },
             "clusterAddress": "icp-console.apps.dybo-ocp4.os.fyre.ibm.com",
-            "clusterPort": 8443,
+            "clusterPort": 443,
             "grafanaSvcName": "ibm-monitoring-grafana",
-            "grafanaSvcPort": 8090,
+            "grafanaSvcPort": 3000,
             "iamProvider": {
               "idManagementSvc": "platform-identity-management",
               "idManagementSvcPort": 4500,

@@ -125,25 +125,24 @@ func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
 	drops := []v1.Capability{"ALL"}
 	pe := false
 	p := false
-	configmaps := map[string]string{
-		"/opt/ibm/router/conf":                           ProRouterNgCmName(cr),
-		"/opt/ibm/router/entry":                          RouterEntryCmName(cr),
-		"/opt/ibm/router/nginx/conf/prom.lua":            ProLuaCmName(cr),
-		"/opt/ibm/router/nginx/conf/monitoring-util.lua": ProLuaUtilsCmName(cr),
+	prometheus, perr := NewPrometheus(cr)
+	if perr != nil {
+		return nil, perr
 	}
-	cmStr, err := json.Marshal(configmaps)
-	if err != nil {
-		return nil, err
+	prometheus.Name = "ibm-monitoring-prometheus-hub"
+	prometheus.ObjectMeta.Labels[Component] = hubPromemetheus
+	prometheus.Spec.RuleSelector = &metav1.LabelSelector{
+		MatchLabels: map[string]string{Component: hubPromemetheus},
 	}
-	secrets := map[string]string{
-		"/opt/ibm/router/caCerts": cr.Spec.MonitoringSecret,
-		"/opt/ibm/router/certs":   cr.Spec.Certs.MonitoringSecret,
-		"":                        cr.Spec.MonitoringClientSecret,
+	prometheus.Spec.Storage = nil
+	prometheus.Spec.AdditionalScrapeConfigs = nil
+	prometheus.Spec.PodMetadata.Labels[AppLabelKey] = hubPromemetheus
+	prometheusStr, merr := json.Marshal(prometheus)
+	if merr != nil {
+		return nil, merr
 	}
-	secretStr, err := json.Marshal(secrets)
-	if err != nil {
-		return nil, err
-	}
+	fmt.Println("PrometheusStr:")
+	fmt.Println(string(prometheusStr))
 
 	container := &v1.Container{
 		Name:            "mcm",
@@ -159,10 +158,6 @@ func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
 		Resources: cr.Spec.MCMMonitor.Resources,
 		Env: []v1.EnvVar{
 			{
-				Name:  "INIT_IMAGE",
-				Value: cr.Spec.MCMMonitor.HelperImage,
-			},
-			{
 				Name:  "NAMESPACES",
 				Value: cr.Namespace,
 			},
@@ -171,28 +166,16 @@ func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
 				Value: cr.Namespace,
 			},
 			{
-				Name:  "CLUSTER_ADDRESS",
-				Value: cr.Spec.ClusterAddress,
-			},
-			{
-				Name:  "CLUSTER_PORT",
-				Value: fmt.Sprint(cr.Spec.ClusterPort),
-			},
-			{
 				Name:  "IS_HUB_CLUSTER",
 				Value: fmt.Sprint(cr.Spec.MCMMonitor.IsHubCluster),
 			},
 			{
-				Name:  "ALERTMANAGER_NAME",
-				Value: AlertmanagerName(cr),
+				Name:  "GRAFANA_BASE_URL",
+				Value: fmt.Sprintf("https://%s:%d/", cr.Spec.GrafanaSvcName, cr.Spec.GrafanaSvcPort),
 			},
 			{
-				Name:  "CONFIGMAPS",
-				Value: string(cmStr),
-			},
-			{
-				Name:  "SECRETS",
-				Value: string(secretStr),
+				Name:  "PROMETHEUS_YAML",
+				Value: string(prometheusStr),
 			},
 		},
 		VolumeMounts: []v1.VolumeMount{
@@ -211,7 +194,7 @@ func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
 }
 func msmcCtrlLabels(cr *promext.PrometheusExt) map[string]string {
 	labels := make(map[string]string)
-	labels[AppLabelKey] = AppLabekValue
+	labels[AppLabelKey] = AppLabelValue
 	labels[Component] = "mcm-ctl"
 	labels[MeteringLabelKey] = MetringLabelValue
 	labels[managedLabelKey()] = managedLabelValue(cr)

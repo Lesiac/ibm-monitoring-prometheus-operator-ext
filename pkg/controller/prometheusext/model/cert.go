@@ -46,7 +46,7 @@ func NewCertitication(name string, cr *proext.PrometheusExt, dnsNames []string) 
 
 func getCertLabels(cr *proext.PrometheusExt) map[string]string {
 	lables := make(map[string]string)
-	lables[AppLabelKey] = AppLabekValue
+	lables[AppLabelKey] = AppLabelValue
 	for key, v := range cr.Labels {
 		lables[key] = v
 	}

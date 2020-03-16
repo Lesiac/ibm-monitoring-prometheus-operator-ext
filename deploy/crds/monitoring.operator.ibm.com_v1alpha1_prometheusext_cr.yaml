@@ -5,9 +5,9 @@ metadata:
 spec:
     storageClassName: rook-ceph-block-internal
     clusterAddress: "icp-console.apps.dybo-ocp4.os.fyre.ibm.com"
-    clusterPort: 8443
+    clusterPort: 443
     grafanaSvcName: "ibm-monitoring-grafana"
-    grafanaSvcPort: 8090
+    grafanaSvcPort: 3000
     imagePullSecrets:
     - infra-registry-key
     routerImage: hyc-cloud-private-edge-docker-local.artifactory.swg-devops.com/ibmcom-amd64/icp-management-ingress:2.5.1
