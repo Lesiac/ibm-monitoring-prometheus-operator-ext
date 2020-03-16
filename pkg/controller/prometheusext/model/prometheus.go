@@ -209,7 +209,7 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 		ConfigMaps:     []string{ProRouterNgCmName(cr), RouterEntryCmName(cr), ProLuaCmName(cr), ProLuaUtilsCmName(cr)},
 		ServiceMonitorSelector: &metav1.LabelSelector{
 			MatchExpressions: []metav1.LabelSelectorRequirement{
-				metav1.LabelSelectorRequirement{
+				{
 					Key:      Component,
 					Operator: "NotIn",
 					Values:   []string{hubPromemetheus},
@@ -257,7 +257,7 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 	//spec.RuleNamespaceSelector = &metav1.LabelSelector{}
 	spec.RuleSelector = &metav1.LabelSelector{
 		MatchExpressions: []metav1.LabelSelectorRequirement{
-			metav1.LabelSelectorRequirement{
+			{
 				Key:      Component,
 				Operator: "NotIn",
 				Values:   []string{hubPromemetheus},
