@@ -19,6 +19,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	appsv1 "k8s.io/api/apps/v1"
 	v1 "k8s.io/api/core/v1"
@@ -27,8 +28,11 @@ import (
 	promext "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
 )
 
+var creationTime *metav1.Time = nil
+
 //NewMCMCtlDeployment create new deployment object for mcm controller
 func NewMCMCtlDeployment(cr *promext.PrometheusExt) (*appsv1.Deployment, error) {
+	creationTime = &metav1.Time{Time: time.Now()}
 	spec, err := mcmDeploymentSpec(cr)
 	if err != nil {
 		return nil, err
@@ -53,10 +57,18 @@ func UpdatedMCMCtlDeployment(cr *promext.PrometheusExt, curr *appsv1.Deployment)
 	if err != nil {
 		return nil, err
 	}
+
 	deployment := curr.DeepCopy()
 	deployment.ObjectMeta.Labels = msmcCtrlLabels(cr)
+	deployment.Spec.Selector = spec.Selector
 
-	deployment.Spec = *spec
+	deployment.Spec.Template.ObjectMeta.Labels = spec.Template.ObjectMeta.Labels
+	deployment.Spec.Template.ObjectMeta.Annotations = spec.Template.ObjectMeta.Annotations
+	deployment.Spec.Template.Spec.Containers = spec.Template.Spec.Containers
+	deployment.Spec.Template.Spec.Volumes = spec.Template.Spec.Volumes
+	deployment.Spec.Template.Spec.ImagePullSecrets = spec.Template.Spec.ImagePullSecrets
+	deployment.Spec.Template.Spec.ServiceAccountName = spec.Template.Spec.ServiceAccountName
+
 	return deployment, nil
 
 }
@@ -121,11 +133,13 @@ func mcmDeploymentSpec(cr *promext.PrometheusExt) (*appsv1.DeploymentSpec, error
 	return spec, nil
 
 }
+
 func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
 	drops := []v1.Capability{"ALL"}
 	pe := false
 	p := false
 	prometheus, perr := NewPrometheus(cr)
+	prometheus.Spec.PodMetadata.CreationTimestamp = *creationTime
 	if perr != nil {
 		return nil, perr
 	}
@@ -141,8 +155,6 @@ func mcmContainer(cr *promext.PrometheusExt) (*v1.Container, error) {
 	if merr != nil {
 		return nil, merr
 	}
-	fmt.Println("PrometheusStr:")
-	fmt.Println(string(prometheusStr))
 
 	container := &v1.Container{
 		Name:            "mcm",
