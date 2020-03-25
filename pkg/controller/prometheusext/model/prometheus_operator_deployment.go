@@ -40,7 +40,13 @@ func NewProOperatorDeployment(cr *promext.PrometheusExt) *appsv1.Deployment {
 			Namespace: cr.Namespace,
 			Labels:    proOperatorLabels(cr),
 		},
+		Spec: *promeDeploymentSpec(cr),
 	}
+
+	return deployment
+}
+
+func promeDeploymentSpec(cr *promext.PrometheusExt) *appsv1.DeploymentSpec {
 	spec := &appsv1.DeploymentSpec{
 		Selector: &metav1.LabelSelector{
 			MatchLabels: proOperatorLabels(cr),
@@ -72,19 +78,10 @@ func NewProOperatorDeployment(cr *promext.PrometheusExt) *appsv1.Deployment {
 	container := prometneusOperatorContainer(cr)
 	spec.Template.Spec.Containers = []v1.Container{*container}
 
-	return deployment
+	return spec
+
 }
 func prometneusOperatorContainer(cr *promext.PrometheusExt) *v1.Container {
-	/*
-	   resources:
-	     limits:
-	       cpu: 200m
-	       memory: 100Mi
-	     requests:
-	       cpu: 100m
-	       memory: 50Mi
-	*/
-
 	pe := false
 	p := false
 	var cpuLimit resource.Quantity
@@ -96,7 +93,7 @@ func prometneusOperatorContainer(cr *promext.PrometheusExt) *v1.Container {
 	if err != nil {
 		log.Error(err, "")
 	}
-	memLimit, err = resource.ParseQuantity("100Mi")
+	memLimit, err = resource.ParseQuantity("256Mi")
 	if err != nil {
 		log.Error(err, "")
 	}
@@ -115,7 +112,7 @@ func prometneusOperatorContainer(cr *promext.PrometheusExt) *v1.Container {
 		ImagePullPolicy: cr.Spec.ImagePolicy,
 		Args: []string{
 			"-namespaces=" + cr.Namespace,
-			"manage-crds=false",
+			"-manage-crds=false",
 			"-logtostderr=true",
 			"--config-reloader-image=" + cr.Spec.PrometheusOperator.ConfigmapReloadImage,
 			"--prometheus-config-reloader=" + cr.Spec.PrometheusConfigImage,
@@ -152,7 +149,18 @@ func prometneusOperatorContainer(cr *promext.PrometheusExt) *v1.Container {
 
 //UpdatedProOperatorDeployment create new deployment for prometheus operator
 func UpdatedProOperatorDeployment(cr *promext.PrometheusExt, curr *appsv1.Deployment) *appsv1.Deployment {
-	deployment := &appsv1.Deployment{}
+	deployment := curr.DeepCopy()
+	deployment.ObjectMeta.Labels = proOperatorLabels(cr)
+	ann := commonPodAnnotations()
+	for k, v := range ann {
+		deployment.ObjectMeta.Annotations[k] = v
+
+	}
+	spec := promeDeploymentSpec(cr)
+	deployment.Spec.Template.ObjectMeta.Labels = spec.Template.ObjectMeta.Labels
+	deployment.Spec.Template.ObjectMeta.Annotations = spec.Template.ObjectMeta.Annotations
+	deployment.Spec.Template.Spec.Containers = spec.Template.Spec.Containers
+
 	return deployment
 }
 

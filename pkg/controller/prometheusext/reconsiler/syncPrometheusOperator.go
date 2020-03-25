@@ -27,7 +27,7 @@ func (r *Reconsiler) syncProOperatorDeployment() error {
 			return err
 		}
 	} else {
-		deployment := model.UpdatedProOperatorDeployment(r.CR, r.CurrentState.MCMCtrlDeployment)
+		deployment := model.UpdatedProOperatorDeployment(r.CR, r.CurrentState.PrometheusOperatorDeployment)
 
 		if err := r.updateObject(deployment); err != nil {
 			log.Error(err, "Failed to update prometheus operator deployment in cluster")
