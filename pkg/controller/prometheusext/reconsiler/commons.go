@@ -254,11 +254,11 @@ func (r *Reconsiler) getStorageClass() (string, error) {
 	scList := &storagev1.StorageClassList{}
 	err := r.Client.List(r.Context, scList)
 	if err != nil {
-		log.Error(err, "Failed to get storage class list")
+		log.Error(err, "failed to get storage class list")
 		return "", err
 	}
 	if len(scList.Items) == 0 {
-		err := fmt.Errorf("Could not find storage class in the cluster")
+		err := fmt.Errorf("could not find storage class in the cluster")
 		log.Error(err, "")
 		return "", err
 	}
@@ -286,7 +286,7 @@ func (r *Reconsiler) getStorageClass() (string, error) {
 		return nonDefaultSC[0], nil
 	}
 
-	err = fmt.Errorf("Could not find dynamic provisioner storage class in the cluster")
+	err = fmt.Errorf("could not find dynamic provisioner storage class in the cluster")
 	log.Error(err, "")
 
 	return "", err
