@@ -89,7 +89,6 @@ func NewAlertmanager(cr *promext.PrometheusExt) (*promv1.Alertmanager, error) {
 				Annotations:       commonPodAnnotations(),
 				CreationTimestamp: metav1.Time{Time: time.Now()},
 			},
-			BaseImage:   cr.Spec.AlertManagerConfig.ImageRepo,
 			Replicas:    &replicas,
 			Resources:   cr.Spec.AlertManagerConfig.Resources,
 			Secrets:     []string{cr.Spec.Certs.MonitoringSecret, cr.Spec.Certs.MonitoringClientSecret},
@@ -136,6 +135,12 @@ func NewAlertmanager(cr *promext.PrometheusExt) (*promv1.Alertmanager, error) {
 	if cr.Spec.AlertManagerConfig.ImageSHA != "" {
 		am.Spec.SHA = cr.Spec.AlertManagerConfig.ImageSHA
 	}
+	if cr.Spec.AlertManagerConfig.Image != "" {
+		am.Spec.Image = &cr.Spec.AlertManagerConfig.Image
+	}
+	if cr.Spec.AlertManagerConfig.ImageRepo != "" {
+		am.Spec.BaseImage = cr.Spec.AlertManagerConfig.ImageRepo
+	}
 
 	return am, nil
 }
@@ -156,12 +161,17 @@ func UpdatedAlertmanager(cr *promext.PrometheusExt, curr *promv1.Alertmanager) (
 	am.Labels = alertmanagerLabels(cr)
 	am.Spec.PodMetadata.Labels = alertmanagerLabels(cr)
 	am.Spec.PodMetadata.Annotations = commonPodAnnotations()
-	am.Spec.BaseImage = cr.Spec.AlertManagerConfig.ImageRepo
 	if cr.Spec.AlertManagerConfig.ImageTag != "" {
 		am.Spec.Tag = cr.Spec.AlertManagerConfig.ImageTag
 	}
 	if cr.Spec.AlertManagerConfig.ImageSHA != "" {
 		am.Spec.SHA = cr.Spec.AlertManagerConfig.ImageSHA
+	}
+	if cr.Spec.AlertManagerConfig.Image != "" {
+		am.Spec.Image = &cr.Spec.AlertManagerConfig.Image
+	}
+	if cr.Spec.AlertManagerConfig.ImageRepo != "" {
+		am.Spec.BaseImage = cr.Spec.AlertManagerConfig.ImageRepo
 	}
 	am.Spec.Resources = cr.Spec.AlertManagerConfig.Resources
 	am.Spec.Secrets = []string{cr.Spec.Certs.MonitoringSecret, cr.Spec.Certs.MonitoringClientSecret}
