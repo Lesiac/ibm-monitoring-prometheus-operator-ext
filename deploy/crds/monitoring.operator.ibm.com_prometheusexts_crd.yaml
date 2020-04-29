@@ -35,6 +35,8 @@ spec:
             alertManagerConfig:
               description: Configurations for alertmanager
               properties:
+                image:
+                  type: string
                 imageRepo:
                   type: string
                 imageSHA:
@@ -70,7 +72,6 @@ spec:
                   format: int32
                   type: integer
               required:
-              - imageRepo
               - servicePort
               type: object
             certs:
@@ -197,6 +198,8 @@ spec:
               properties:
                 evaluationInterval:
                   type: string
+                image:
+                  type: string
                 imageRepo:
                   type: string
                 imageSHA:
@@ -259,7 +262,6 @@ spec:
                   format: int32
                   type: integer
               required:
-              - imageRepo
               - nodeCPUThreshold
               - nodeMemoryThreshold
               - servicePort

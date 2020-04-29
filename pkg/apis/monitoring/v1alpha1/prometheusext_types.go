@@ -113,7 +113,8 @@ type HelmReleasesMonitor struct {
 // PrometheusConfig defines configuration of Prometheus object
 type PrometheusConfig struct {
 	ServiceAccountName  string                  `json:"serviceAccount,omitempty"`
-	ImageRepo           string                  `json:"imageRepo"`
+	Image               string                  `json:"image,omitempty"`
+	ImageRepo           string                  `json:"imageRepo,omitempty"`
 	ImageTag            string                  `json:"imageTag,omitempty"`
 	ImageSHA            string                  `json:"imageSHA,omitempty"`
 	Retention           string                  `json:"retention,omitempty"`
@@ -131,7 +132,8 @@ type PrometheusConfig struct {
 // AlertManagerConfig defines configuration of AlertManager object
 type AlertManagerConfig struct {
 	ServiceAccountName string                  `json:"serviceAccount,omitempty"`
-	ImageRepo          string                  `json:"imageRepo"`
+	Image              string                  `json:"image,omitempty"`
+	ImageRepo          string                  `json:"imageRepo,omitempty"`
 	ImageTag           string                  `json:"imageTag,omitempty"`
 	ImageSHA           string                  `json:"imageSHA,omitempty"`
 	PVSize             string                  `json:"pvSize,omitempty"`
