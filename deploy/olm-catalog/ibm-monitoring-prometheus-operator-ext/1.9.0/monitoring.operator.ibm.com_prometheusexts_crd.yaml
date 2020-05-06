@@ -309,9 +309,6 @@ spec:
             configmaps:
               description: Status of required configmaps, created or not
               type: string
-            exporter:
-              description: Status of the exporter CR, created or not
-              type: string
             prometheus:
               description: Status of the prometheus CR, created or not
               type: string

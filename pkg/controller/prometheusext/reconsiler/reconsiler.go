@@ -33,9 +33,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/controller/controllerutil"
 	logf "sigs.k8s.io/controller-runtime/pkg/log"
 
-	exportersv1alpha1 "github.com/IBM/ibm-monitoring-exporters-operator/pkg/apis/monitoring/v1alpha1"
-	"github.com/IBM/ibm-monitoring-exporters-operator/pkg/controller/exporter/model"
 	monitoringv1alpha1 "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
+	"github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 	promodel "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/controller/prometheusext/model"
 )
 
@@ -59,7 +58,6 @@ type ClusterState struct {
 	PromeIngress                  *ev1beta1.Ingress
 	AlertmanagerSvc               *v1.Service
 	AlertManagerIngress           *ev1beta1.Ingress
-	Exporter                      *exportersv1alpha1.Exporter
 	MonitoringSecret              *v1.Secret
 	MonitoringClientSecret        *v1.Secret
 	PrometheusScrapeTargetsSecret *v1.Secret
@@ -78,9 +76,6 @@ func (r *Reconsiler) ReadClusterState() error {
 		return err
 	}
 	if err := r.readRouterCms(); err != nil {
-		return err
-	}
-	if err := r.readExporter(); err != nil {
 		return err
 	}
 	if err := r.readPrometheus(); err != nil {
@@ -145,11 +140,6 @@ func (r *Reconsiler) updateStatus() {
 		r.CR.Status.Alertmanager = model.NotReady
 	} else {
 		r.CR.Status.Alertmanager = r.CurrentState.ManagedAlertmanager.ObjectMeta.Name
-	}
-	if r.CurrentState.Exporter == nil {
-		r.CR.Status.Exporter = model.NotReady
-	} else {
-		r.CR.Status.Exporter = r.CurrentState.Exporter.ObjectMeta.Name
 	}
 	r.CR.Status.Configmaps = r.cmStatus()
 	r.CR.Status.Secrets = r.secretStatus()

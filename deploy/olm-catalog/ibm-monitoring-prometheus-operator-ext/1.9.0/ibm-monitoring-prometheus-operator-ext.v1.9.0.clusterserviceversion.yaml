@@ -194,9 +194,6 @@ spec:
       - description: Status of required configmaps, created or not
         displayName: Configmaps
         path: configmaps
-      - description: Status of the exporter CR, created or not
-        displayName: Exporter
-        path: exporter
       - description: Status of the prometheus CR, created or not
         displayName: Prometheus
         path: prometheus

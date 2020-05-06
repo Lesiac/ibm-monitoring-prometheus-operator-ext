@@ -182,9 +182,6 @@ type PrometheusExtStatus struct {
 	//Status of the alert manager CR, created or not
 	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
 	Alertmanager string `json:"alertmanager,omitempty"`
-	//Status of the exporter CR, created or not
-	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
-	Exporter string `json:"exporter,omitempty"`
 	//Status of required secrets, created or not
 	// +operator-sdk:gen-csv:customresourcedefinitions.statusDescriptors=true
 	Secrets string `json:"secrets,omitempty"`

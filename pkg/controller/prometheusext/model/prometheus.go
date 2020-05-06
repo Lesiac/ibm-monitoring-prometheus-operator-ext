@@ -28,7 +28,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 
-	exportersv1alpha1 "github.com/IBM/ibm-monitoring-exporters-operator/pkg/apis/monitoring/v1alpha1"
 	promext "github.com/IBM/ibm-monitoring-prometheus-operator-ext/pkg/apis/monitoring/v1alpha1"
 )
 
@@ -345,7 +344,7 @@ func scrapeTargetsFileName() string {
 }
 
 //NewScrapeTargetsSecret return secret for prometheus scrape targets
-func NewScrapeTargetsSecret(cr *promext.PrometheusExt, exporter *exportersv1alpha1.Exporter) (*v1.Secret, error) {
+func NewScrapeTargetsSecret(cr *promext.PrometheusExt) (*v1.Secret, error) {
 	var tplBuffer bytes.Buffer
 
 	clusterDomain := defaultClusterDomain
@@ -358,7 +357,7 @@ func NewScrapeTargetsSecret(cr *promext.PrometheusExt, exporter *exportersv1alph
 		Standalone:       !cr.Spec.MCMMonitor.IsHubCluster,
 		CASecretName:     cr.Spec.MonitoringSecret,
 		ClientSecretName: cr.Spec.MonitoringClientSecret,
-		NodeExporter:     exporter != nil && exporter.Spec.NodeExporter.Enable,
+		NodeExporter:     true,
 		ClusterDomain:    clusterDomain,
 	}
 	if err := scrapeTargetsTemplate.Execute(&tplBuffer, paras); err != nil {
@@ -376,7 +375,7 @@ func NewScrapeTargetsSecret(cr *promext.PrometheusExt, exporter *exportersv1alph
 }
 
 //UpdatedScrapeTargetsSecret return secret for prometheus scrape targets
-func UpdatedScrapeTargetsSecret(cr *promext.PrometheusExt, exporter *exportersv1alpha1.Exporter, currentSecret *v1.Secret) (*v1.Secret, error) {
+func UpdatedScrapeTargetsSecret(cr *promext.PrometheusExt, currentSecret *v1.Secret) (*v1.Secret, error) {
 	secret := currentSecret.DeepCopy()
 	var tplBuffer bytes.Buffer
 	clusterDomain := defaultClusterDomain
@@ -388,7 +387,7 @@ func UpdatedScrapeTargetsSecret(cr *promext.PrometheusExt, exporter *exportersv1
 		Standalone:       !cr.Spec.MCMMonitor.IsHubCluster,
 		CASecretName:     cr.Spec.MonitoringSecret,
 		ClientSecretName: cr.Spec.MonitoringClientSecret,
-		NodeExporter:     exporter != nil && exporter.Spec.NodeExporter.Enable,
+		NodeExporter:     true,
 		ClusterDomain:    clusterDomain,
 	}
 	if err := scrapeTargetsTemplate.Execute(&tplBuffer, paras); err != nil {
