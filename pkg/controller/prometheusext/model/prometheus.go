@@ -19,6 +19,7 @@ package model
 import (
 	"bytes"
 	"html/template"
+	"os"
 	"time"
 
 	promv1 "github.com/coreos/prometheus-operator/pkg/apis/monitoring/v1"
@@ -187,7 +188,9 @@ func prometheusSvcSelectors(cr *promext.PrometheusExt) map[string]string {
 	selectors[string(Prometheus)] = PromethuesName(cr)
 	return selectors
 }
-
+func promeImage(cr *promext.PrometheusExt) *string {
+	return imageName(os.Getenv(promeImageEnv), cr.Spec.PrometheusConfig.ImageRepo)
+}
 func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 	replicas := int32(1)
 	pvsize := DefaultPVSize
@@ -307,15 +310,8 @@ func prometheusSpec(cr *promext.PrometheusExt) (*promv1.PrometheusSpec, error) {
 	if cr.Spec.PrometheusConfig.ImageTag != "" {
 		spec.Tag = cr.Spec.PrometheusConfig.ImageTag
 	}
-	if cr.Spec.PrometheusConfig.ImageSHA != "" {
-		spec.SHA = cr.Spec.PrometheusConfig.ImageSHA
-	}
-	if cr.Spec.PrometheusConfig.Image != "" {
-		spec.Image = &cr.Spec.PrometheusConfig.Image
-	}
-	if cr.Spec.PrometheusConfig.ImageRepo != "" {
-		spec.BaseImage = cr.Spec.PrometheusConfig.ImageRepo
-	}
+
+	spec.Image = promeImage(cr)
 
 	return spec, nil
 }
