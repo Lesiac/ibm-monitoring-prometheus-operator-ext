@@ -72,7 +72,6 @@ spec:
                   format: int32
                   type: integer
               required:
-              - imageRepo
               - servicePort
               type: object
             certs:
@@ -259,7 +258,6 @@ spec:
                   format: int32
                   type: integer
               required:
-              - imageRepo
               - nodeCPUThreshold
               - nodeMemoryThreshold
               - servicePort
