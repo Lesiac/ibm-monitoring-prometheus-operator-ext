@@ -65,6 +65,7 @@ const (
 	promeOPImageEnv   = "PROM_OP_IMAGE"
 	promeConfImageEnv = "PROM_CONF_IMAGE"
 	routerImageEnv    = "ROUTER_IMAGE"
+	helperImageEnv    = "MCM_HELPER_IMAGE"
 	mcmImageEnv       = "MCM_IMAGE"
 
 	imageDigestKey = `sha256:`

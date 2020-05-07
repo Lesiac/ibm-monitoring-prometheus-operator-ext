@@ -325,7 +325,7 @@ func initContainer(cr *promext.PrometheusExt) *v1.Container {
 	p := true
 	return &v1.Container{
 		Name:            "chmod",
-		Image:           cr.Spec.HelperImage,
+		Image:           *imageName(os.Getenv(helperImageEnv), cr.Spec.HelperImage),
 		SecurityContext: &v1.SecurityContext{Privileged: &p},
 		Command:         []string{"/bin/sh", "-c", "if [ ! -d /prometheus ];then mkdir /prometheus; fi;chmod -R 777 /prometheus"},
 		VolumeMounts: []v1.VolumeMount{{
