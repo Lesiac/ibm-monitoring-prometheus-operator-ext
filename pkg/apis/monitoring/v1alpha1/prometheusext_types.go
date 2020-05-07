@@ -57,7 +57,7 @@ type PrometheusExtSpec struct {
 	PrometheusConfig `json:"prometheusConfig"`
 	//repo:tag for router image
 	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
-	RouterImage string `json:"routerImage"`
+	RouterImage string `json:"routerImage,omitempty"`
 	//Storage class name used by Prometheus and Alertmanager
 	// +operator-sdk:gen-csv:customresourcedefinitions.specDescriptors=true
 	StorageClassName string `json:"storageClassName"`

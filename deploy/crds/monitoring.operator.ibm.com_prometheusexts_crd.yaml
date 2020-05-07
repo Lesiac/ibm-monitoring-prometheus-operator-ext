@@ -289,7 +289,6 @@ spec:
           - grafanaSvcPort
           - iamProvider
           - prometheusConfig
-          - routerImage
           - storageClassName
           type: object
         status:
