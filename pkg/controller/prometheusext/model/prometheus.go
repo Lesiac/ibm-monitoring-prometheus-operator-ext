@@ -197,7 +197,7 @@ func prometheusDefaultResources() v1.ResourceRequirements {
 	mem, _ := resource.ParseQuantity("1Gi")
 	cpu, _ := resource.ParseQuantity("200m")
 	return v1.ResourceRequirements{
-		Limits: v1.ResourceList{
+		Requests: v1.ResourceList{
 			v1.ResourceMemory: mem,
 			v1.ResourceCPU:    cpu,
 		},

@@ -151,7 +151,7 @@ func alertManagerResources(cr *promext.PrometheusExt) v1.ResourceRequirements {
 	mem, _ := resource.ParseQuantity("128Mi")
 	cpu, _ := resource.ParseQuantity("20m")
 	defaultRes := v1.ResourceRequirements{
-		Limits: v1.ResourceList{
+		Requests: v1.ResourceList{
 			v1.ResourceMemory: mem,
 			v1.ResourceCPU:    cpu,
 		},
