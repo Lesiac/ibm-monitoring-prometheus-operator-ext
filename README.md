@@ -29,11 +29,11 @@ Before you install this operator, you need to first install the operator depende
 
 ## Persistent Volume
 
-The operator requires PVs for data persistence for Prometheus and Alertmanager. It support both ReadWriteOnce (RWO) and ReadWriteMany (RWX) modes. RWO mode is recommended.
+The operator requires persistent volumes for Prometheus and Alertmanager. It supports both `ReadWriteOnce` (RWO) and `ReadWriteMany` (RWX) modes. RWO mode is recommended.
 
-The operator will find available StorageClass in the cluser automatically. It will use the default StorageClass if defined. If no default StorageClass defined, it will find available one randomly.
+The operator automatically finds the available `StorageClass` in the cluster and uses the default, if defined. If no default `StorageClass` is defined, it randomly finds an available storage class.
 
-You can also specify StorageClass in CR use `storageClassName` parameter.
+You can also specify storage class in the CR by using the `storageClassName` parameter.
 
 ## Documentation
 
